@@ -354,4 +354,12 @@ foreach($html->find('td') as $td) {
     $result[$intestazione] = $temp_result;
   }
 } 
-var_dump($result);
+
+foreach ($result as $valori) {
+  echo 'START<br/><br/>';
+  echo '<ul>';
+  foreach ($valori as $key => $value) {
+    printf("<li>%s --> %s</li>", $key, $value);
+  }
+  echo '</ul>';
+}
