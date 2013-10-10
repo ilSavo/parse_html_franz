@@ -332,29 +332,26 @@ confezionato a punto metallico </td>
 <p><span style="color: #0033FF">https://app.kpi.com/ProjectManagement.html?link=7SwPCR0hIuv85%252F0l5AMmKA%253D%253D&uid=rcC4eOL%2FMOU%3D&cid=yNUkdj2uBOA%3D</span></p>
 </body>
 </html>');
-
-$chiaviArray = array(
-  'task_summary' => array('task_name', 'task_number', 'description', 'priority', 'status', 'completed'),
-  'additional_details' => array('creator', 'project', 'client', 'assignee', ''),
-  'dates' => array('start_date', 'due_date', 'est_time', '')
-);
+function cleanString($str) { return strtolower(preg_replace('/\s+/', "_", trim($str))); } 
+$chiaviArray = array('task_summary', 'additional_details', 'dates');
 
 $result = array();
 foreach($html->find('td') as $td) {
-  $intestazione = strtolower(preg_replace('/\s+/', "_", trim($td->plaintext)));
-  if (in_array($intestazione, array_keys($chiaviArray))) {
-    $result_keys = $chiaviArray[$intestazione];
+  $intestazione = cleanString($td->plaintext);
+  if (in_array($intestazione, $chiaviArray)) {
+    $temp_result = array();
     $table = $td->parent()->parent()->parent();
     $count = 0;
     $result_values = array();
     foreach ($table->find('tr') as $riga) {
-      if ($count > 0) {
-        $td = $riga->getElementsByTagName("td", 1);
-        $result_values[($count-1)] = trim($td->plaintext);
+      if ($count > 0) { // salto la prima riga
+        $td_key = cleanString($riga->getElementsByTagName("td", 0)->plaintext);
+        $td_val = cleanString($riga->getElementsByTagName("td", 1)->plaintext);
+        if ($td_key != "") $temp_result[$td_key] = $td_val;
       }
       $count++;
     }
-    $result[$intestazione] = array_combine($result_keys, $result_values);
+    $result[$intestazione] = $temp_result;
   }
 } 
 var_dump($result);
