@@ -333,11 +333,19 @@ confezionato a punto metallico </td>
 </body>
 </html>');
 
+$chiaviArray = array(
+  'task_summary' => array('task_name', 'task_number', 'description', 'priority', 'status', 'completed'),
+  'additional_details' => array('creator', 'project', 'client', 'assignee', ''),
+  'dates' => array('start_date', 'due_date', 'est_time', '')
+);
+
+$result = array();
 foreach($html->find('td') as $td) {
-  if (trim($td->innertext) == "Task Summary") {
+  $intestazione = strtolower(preg_replace('/\s+/', "_", trim($td->plaintext)));
+  if (in_array($intestazione, array_keys($chiaviArray))) {
+    $result_keys = $chiaviArray[$intestazione];
     $table = $td->parent()->parent()->parent();
     $count = 0;
-    $result_keys = array('task_name', 'task_number', 'description', 'priority', 'status', 'completed');
     $result_values = array();
     foreach ($table->find('tr') as $riga) {
       if ($count > 0) {
@@ -346,7 +354,7 @@ foreach($html->find('td') as $td) {
       }
       $count++;
     }
-    $result = array_combine($result_keys, $result_values);
+    $result[$intestazione] = array_combine($result_keys, $result_values);
   }
 } 
 var_dump($result);
